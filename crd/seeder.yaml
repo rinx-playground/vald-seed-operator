@@ -3,7 +3,7 @@ kind: Seeder
 metadata:
   name: seed-test
 spec:
-  host: lb-gateway.vald.svc
+  host: vald-lb-gateway.default.svc
   port: 8081
   edn: |
     {:sources [{:type :raw

@@ -1,0 +1,14 @@
+apiVersion: seeder.rinx.vald.vdaas.org/v1alpha1
+kind: Seeder
+metadata:
+  name: seed-test
+spec:
+  host: lb-gateway.vald.svc
+  port: 8081
+  edn: |
+    {:sources [{:type :raw
+                :vectors [{:id "meta1"
+                           :vector [0.1 0.2 0.3]}]}
+               {:type :random
+                :dimension 784
+                :number 100}]}

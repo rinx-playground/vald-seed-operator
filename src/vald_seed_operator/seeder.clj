@@ -1,11 +1,20 @@
 (ns vald-seed-operator.seeder
   (:require
+   [clojure.edn :as edn]
    [clojure.core.async :as async :refer [<! >! <!! >!!]]
    [com.stuartsierra.component :as component]
    [taoensso.timbre :as timbre]
+   [jsonista.core :as json]
+   [camel-snake-kebab.core :as csk]
    [vald-client-clj.core :as vald])
   (:import
     [java.util UUID Random]))
+
+
+(def json-mapper
+  (json/object-mapper
+    {:encode-key-fn name
+     :decode-key-fn csk/->kebab-case-keyword}))
 
 (defn box [v]
   (reify
@@ -18,6 +27,12 @@
 (defn ->vectors [{:keys [type] :as source}]
   (case type
     :raw (get source :vectors)
+    :file (let [{:keys [url format]} source
+                file (slurp url)]
+            (case format
+              :edn (edn/read-string file)
+              :json (json/read-value file json-mapper)
+              []))
     :random (let [{:keys [dimension number]} source
                   generator (Random.)
                   rand (fn []

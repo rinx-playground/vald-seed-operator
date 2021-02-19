@@ -9,6 +9,8 @@
                  [com.stuartsierra/component "1.0.0"]
                  [http-kit "2.5.1"]
                  [compojure "1.6.2"]
+                 [metosin/jsonista "0.3.1"]
+                 [camel-snake-kebab "0.4.2"]
                  [io.javaoperatorsdk/operator-framework "1.7.0"]
                  [org.bouncycastle/bcpkix-jdk15on "1.68"]
                  [io.grpc/grpc-okhttp "1.35.0" :exclusions [io.grpc/grpc-core]]

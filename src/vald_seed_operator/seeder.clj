@@ -74,12 +74,15 @@
 (defn seed [{:keys [host port op edn]}]
   (try
     (timbre/debugf "try to connect to %s:%d" host port)
-    (let [client (vald/vald-client host port)
-          result (case op
-                   :delete (delete client edn)
-                   (insert client edn))]
-      (vald/close client)
-      result)
+    (let [client (vald/vald-client host port)]
+      (try
+        (case op
+          :delete (delete client edn)
+          (insert client edn))
+        (catch Throwable e
+          e)
+        (finally
+          (vald/close client))))
     (catch Throwable e
       e)))
 

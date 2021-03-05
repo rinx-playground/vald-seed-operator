@@ -55,8 +55,14 @@
                      (flatten)
                      (vec))]
     (doall
-      (map (fn [{:keys [id vector]}]
-             (vald/insert client {} id vector)) vectors))
+     (map (fn [{:keys [id vector]}]
+            (try
+              (vald/insert client {} id vector)
+              (catch Throwable e
+                (let [cause (:cause (Throwable->map e))]
+                  (if (re-matches #"^ALREADY_EXISTS.*" cause)
+                    (vald/update client {} id vector)
+                    e))))) vectors))
     (mapv :id vectors)))
 
 (defn delete [client {:keys [ids] :as edn}]

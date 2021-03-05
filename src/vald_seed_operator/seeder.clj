@@ -61,14 +61,23 @@
               (catch Throwable e
                 (let [cause (:cause (Throwable->map e))]
                   (if (re-matches #"^ALREADY_EXISTS.*" cause)
-                    (vald/update client {} id vector)
+                    (try
+                      (vald/update client {} id vector)
+                      (catch Throwable e
+                        e))
                     e))))) vectors))
     (mapv :id vectors)))
 
 (defn delete [client {:keys [ids] :as edn}]
   (timbre/debugf "try to delete ids: %s" ids)
   (doall
-    (map #(vald/remove-id client {} %) ids))
+    (map (fn [id]
+          (try
+            (vald/remove-id client {} id)
+            (catch Throwable e
+              (let [cause (:cause (Throwable->map e))]
+                (when-not (re-matches #"^NOT_FOUND.*" cause)
+                  (throw e)))))) ids))
   ids)
 
 (defn seed [{:keys [host port op edn]}]
